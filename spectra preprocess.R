@@ -1,18 +1,4 @@
-# specify all the packages used
-myPackages <- c("tidyverse", "readxl", "clhs","prospectr")
-
-# define which packages are not installed in the current computer
-notInstalled <- myPackages[!(myPackages%in%installed.packages()[ , "Package"])]
-# install the missing packages
-if(length(notInstalled)>0) install.packages(notInstalled)
-
-# Loading packages
-library(tidyverse)
-library(readxl)
-library(clhs)
-library(prospectr)
-
-# load functions
+# load functions and packages
 source("https://raw.githubusercontent.com/lfdelgadom/cassava_nirs/main/functions.R")
 
 # The following dataset is about physical data and wavelengths with NIRs 
@@ -33,7 +19,6 @@ CASSAVA_BASE$spc <- spec_Cassava
 #The dataset is now much easier to read.
 names(CASSAVA_BASE)
 
-CASSAVA_BASE$spc
 
 # We would like to remove the X in front of the column names of the spectra
 # wavelengths. This will make easier plotting in a later step.
@@ -218,6 +203,9 @@ CASSAVA_BASE$spctSg2 <- filterSg(CASSAVA_BASE$spcT,
                                  m = 2)
 
 
+png(paste0("images/","derivatives.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 12) 
+
 matplot(names(CASSAVA_BASE$spctSg), t(CASSAVA_BASE$spctSg),
         main = "Savitzky-Golay Filtering",
         type = "l",
@@ -239,6 +227,8 @@ legend('topleft',
        lty = c(1, 1),
        col = 2:1)
 
+dev.off()
+
 #----------------------------------------------------
 #--------------Scatter Correction SNV ---------------
 #----------------------------------------------------
@@ -248,6 +238,8 @@ legend('topleft',
 # apply the standard normal variate transformation
 CASSAVA_BASE$specSnvC <- snvBLC(CASSAVA_BASE$spcT)
 
+png(paste0("images/","snv.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 12)
 
 # plot the scatter-corrected spectra (contains negative values)
 matplot(names(CASSAVA_BASE$specSnvC), t(CASSAVA_BASE$specSnvC),
@@ -269,6 +261,7 @@ legend('topleft',
        legend = c("SNV", "Raw"),
        lty = c(1, 1),
        col = 2:1)
+dev.off()
 
 #-------------------------------------------------------
 #------------Multiple scatter plot correction-----------
@@ -300,7 +293,7 @@ legend('topleft',
 
 
 #-----------------------------------------------------------------
-#--------------------MSC, SNV, Raw----------------------------------
+#--------------------MSC, SNV ------------------------------------
 #-----------------------------------------------------------------
 
 # plot the multiplicative scatter-corrected spectra (red)
@@ -322,14 +315,11 @@ legend('topleft',
        border = "black",
        bty='n',
        box.lty = 0,
-       legend = c("MSC", "SNV", "Raw"),
-       lty = c(1, 1, 1),
+       legend = c("MSC", "SNV"),
+       lty = c(1, 1),
        col = c("red", "black"))
 
-# El MSC es un suavisado de la señal y el SNV es una correción del 
-# ruido.
 
-# El MSC es necesario cuando no tengo tanto ruido como liquido.
 #------------------------------------------------------
 #--------------------Detrending------------------------
 #------------------------------------------------------
@@ -339,6 +329,9 @@ legend('topleft',
 
 # detrend the spectra
 CASSAVA_BASE$specDT <- detrendSpc(CASSAVA_BASE$spcT)
+
+png(paste0("images/","detrend.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 12)
 
 # plot the detrended spectra
 matplot(names(CASSAVA_BASE$specDT), t(CASSAVA_BASE$specDT),
@@ -360,10 +353,17 @@ legend("topleft",
        legend = c("raw", "detrended", "linear trend"),
        lty = c(1, 1, 5), col = c(1, 2, 1))
 
+dev.off()
 
-# SNV + detrend
+#------------------------------------------------------
+#--------------- SNV + Detrending ---------------------
+#------------------------------------------------------
 
 CASSAVA_BASE$spc_SNV_DT <- snvBLC(CASSAVA_BASE$spcT) %>% detrendSpc()
+
+
+png(paste0("images/","snv_detrend.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 12)
 
 matplot(names(CASSAVA_BASE$spc_SNV_DT), t(CASSAVA_BASE$spc_SNV_DT),
         type = "l",
@@ -371,20 +371,20 @@ matplot(names(CASSAVA_BASE$spc_SNV_DT), t(CASSAVA_BASE$spc_SNV_DT),
         col = rgb(red = 1, green = 0, blue = 0, alpha = 1),
         main = "SNV + Detrend") 
 
+dev.off()
 #------------------------------------------------------
 #--------------------Derivatives-----------------------
 #------------------------------------------------------
 
 # Converting the spectra to first- or second-order derivatives aims at accentuating the
-#absorbance features contained in the spectra. Derivatives also remove both additive
-#and multiplicative effects on the spectra
+# absorbance features contained in the spectra. Derivatives also remove both additive
+# and multiplicative effects on the spectra
 
 # The first- and second-order derivatives of the smoothed spectra are computed using
 # the filterSg function, by specifying this time m = 1 or m = 2 to indicate
 # whether we want to take the first- or second-order derivative of the smoothed
 # spectra
 
-library(plyr)
 # take first derivative of spectra
 CASSAVA_BASE$specDeriv1 <- filterSg(CASSAVA_BASE$spcT,
                                     w = 3,
@@ -418,16 +418,27 @@ legend("topleft",
        lty = c(1, 1),
        col = 2:1)
 
-# SNV + detrend
+# SNV + detrend + first derivative
 
 CASSAVA_BASE$spc_SNV_DT_1 <- snvBLC(CASSAVA_BASE$spcT) %>% 
-  detrendSpc() %>% filterSg(w = 3, k = 2, m = 1) %>% movav(w = 4)
+  detrendSpc() %>% filterSg(w = 3, k = 2, m = 1)
+
+png(paste0("images/","snv_detrend_der1.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 25)
+
+# plot the first order derivative spectra
+matplot(names(CASSAVA_BASE$spc_SNV_DT_1), t(CASSAVA_BASE$spc_SNV_DT_1),
+        type = "l",
+        ylab = " ",
+        xlab = "Wavelength /nm",
+        main = "SNV + detrend + first derivative")
+dev.off()
 
 #----------------------------------------------------------------------
-#---------------------Centring and Standardizing-----------------------
+#---------------------Centering and Standardizing-----------------------
 #----------------------------------------------------------------------
 
-# centre the spectra wavelengths
+# center the spectra wavelengths
 CASSAVA_BASE$specNorm <- scale(CASSAVA_BASE$spcT, center = TRUE, scale = FALSE)
 
 # standardize the spectra wavelengths

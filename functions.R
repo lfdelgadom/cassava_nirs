@@ -1,5 +1,5 @@
 # specify all the packages used
-myPackages <- c("tidyverse", "readxl", "clhs","prospectr", "signal", "plyr")
+myPackages <- c("tidyverse", "readxl", "clhs","prospectr", "signal", "plyr", "pracma")
 
 # define which packages are not installed in the current computer
 notInstalled <- myPackages[!(myPackages%in%installed.packages()[ , "Package"])]
@@ -118,10 +118,7 @@ mscBLC <- function(spectra) {
 # function for detrending a matrix of spectra
 
 detrendSpc <- function(spectra) {
-  
-  # load the required package
-  require(pracma)
-  
+
   detrendMat <- matrix(NA, ncol = ncol(spectra), nrow = nrow(spectra))
   spectra <- as.matrix(spectra)
   
