@@ -12,7 +12,10 @@ library(readxl)
 library(clhs)
 library(prospectr)
 
-# The following dataset is about phisycal data and wavelengths with NIRs 
+# load functions
+source("https://raw.githubusercontent.com/lfdelgadom/cassava_nirs/main/functions.R")
+
+# The following dataset is about physical data and wavelengths with NIRs 
 CASSAVA_BASE <- read.csv("Data/Data_raw.csv", header = T, sep = ";")
 
 names(CASSAVA_BASE)[1:14]

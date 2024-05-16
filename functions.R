@@ -1,6 +1,14 @@
-# load R libraries necessary to use filterSg function
-library(signal)
-library(plyr)
+# specify all the packages used
+myPackages <- c("tidyverse", "readxl", "clhs","prospectr", "signal", "plyr")
+
+# define which packages are not installed in the current computer
+notInstalled <- myPackages[!(myPackages%in%installed.packages()[ , "Package"])]
+# install the missing packages
+if(length(notInstalled)>0) install.packages(notInstalled)
+
+# load R libraries necessary to use the functions
+#load all packages at once
+lapply(myPackages, library, character.only=TRUE)
 
 #---------------------------------------------------------------------
 #------------To build a function to remove these noisy portions-------
