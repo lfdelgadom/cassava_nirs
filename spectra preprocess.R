@@ -52,7 +52,7 @@ pal = colorRampPalette(cols)
 order = findInterval(CASSAVA_BASE$DM, sort(CASSAVA_BASE$DM))
 
 png(paste0("images/","raw_spectra.jpg"), width = 1080, height = 800, 
-    units = "px", pointsize = 12)
+    units = "px", pointsize = 25)
 
 # plot spectra
 matplot(
@@ -204,7 +204,7 @@ CASSAVA_BASE$spctSg2 <- filterSg(CASSAVA_BASE$spcT,
 
 
 png(paste0("images/","derivatives.jpg"), width = 1080, height = 800, 
-    units = "px", pointsize = 12) 
+    units = "px", pointsize = 25) 
 
 matplot(names(CASSAVA_BASE$spctSg), t(CASSAVA_BASE$spctSg),
         main = "Savitzky-Golay Filtering",
@@ -239,7 +239,7 @@ dev.off()
 CASSAVA_BASE$specSnvC <- snvBLC(CASSAVA_BASE$spcT)
 
 png(paste0("images/","snv.jpg"), width = 1080, height = 800, 
-    units = "px", pointsize = 12)
+    units = "px", pointsize = 25)
 
 # plot the scatter-corrected spectra (contains negative values)
 matplot(names(CASSAVA_BASE$specSnvC), t(CASSAVA_BASE$specSnvC),
@@ -331,7 +331,7 @@ legend('topleft',
 CASSAVA_BASE$specDT <- detrendSpc(CASSAVA_BASE$spcT)
 
 png(paste0("images/","detrend.jpg"), width = 1080, height = 800, 
-    units = "px", pointsize = 12)
+    units = "px", pointsize = 25)
 
 # plot the detrended spectra
 matplot(names(CASSAVA_BASE$specDT), t(CASSAVA_BASE$specDT),
@@ -363,7 +363,7 @@ CASSAVA_BASE$spc_SNV_DT <- snvBLC(CASSAVA_BASE$spcT) %>% detrendSpc()
 
 
 png(paste0("images/","snv_detrend.jpg"), width = 1080, height = 800, 
-    units = "px", pointsize = 12)
+    units = "px", pointsize = 25)
 
 matplot(names(CASSAVA_BASE$spc_SNV_DT), t(CASSAVA_BASE$spc_SNV_DT),
         type = "l",
@@ -469,3 +469,7 @@ legend("topleft",
        legend = c("Raw", "Centred", "Standardized"),
        lty = c(1, 1, 1),
        col = 2:4)
+
+# Save object CASSAVA_BASE
+
+save(CASSAVA_BASE, file = here::here("output", paste("01_", "_trans_spectra_", ".RData", sep = "")))
