@@ -21,6 +21,8 @@ datC <- CASSAVA_BASE[calId, ]
 datV <- CASSAVA_BASE[-calId, ]
 
 # Plot histograms for Dry Matter (DM) content in calibration and validation sets
+png(paste0("images/","hist.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 25)
 par(mfrow = c(1, 2))
 hist(datC$DM, main = "Calibration Set", xlab = "Dry Matter")
 hist(datV$DM, main = "Validation Set", xlab = "Dry Matter")
@@ -32,12 +34,15 @@ v <- pcspectra$sdev^2
 cumv <- 100 * cumsum(v) / sum(v)
 
 # Plot cumulative percentage of variance explained by PCs
+png(paste0("images/","scree.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 25)
 plot(
   cumv[1:20],
   type = "b",
   xlab = "Principal Component",
   ylab = "Cumulative Variance Explained (%)"
 )
+dev.off()
 
 # Specify number of components to use
 ncp <- 12
@@ -56,6 +61,8 @@ sdataNew <- as.data.frame(pcspectraV[, 1:ncp])
 DM_pc_VPred <- predict(DM_pc_CModel, sdataNew)
 
 # Plot observed vs. predicted DM for calibration and validation sets
+png(paste0("images/","obs_vs_pred.jpg"), width = 1080, height = 800, 
+    units = "px", pointsize = 25)
 par(mfrow = c(1, 2))
 plot(
   datC$DM, DM_pc_CPred,
@@ -78,6 +85,7 @@ plot(
   main = "Validation"
 )
 abline(0, 1)
+dev.off()
 
 # Evaluate model performance
 modelPerformance(datC$DM, DM_pc_CPred)
